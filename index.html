@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نموذج استلام جور أعمدة</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #111;
+      color: #f0f0f0;
+      direction: rtl;
+      padding: 10px;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    .section {
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 5px #333;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    label {
+      display: block;
+      margin: 8px 0 4px;
+    }
+    input, select, textarea {
+      width: calc(100% - 12px);
+      padding: 6px;
+      margin-bottom: 10px;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background-color: #222;
+      color: #f0f0f0;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      margin-left: 5px;
+      width: auto;
+      display: inline-block;
+    }
+    button.remove-btn {
+      background-color: #dc3545;
+      margin-top: 5px;
+      padding: 5px 10px;
+      font-size: 0.8em;
+      float: left;
+      width: auto;
+    }
+    button.remove-btn:hover {
+      background-color: #c82333;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .column-box {
+      border: 1px solid #444;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      background-color: #2a2a2a;
+      position: relative;
+    }
+    .sub-section-header {
+        color: #bbb;
+        margin-top: 15px;
+        margin-bottom: 8px;
+        border-bottom: 1px dashed #555;
+        padding-bottom: 5px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    h3 {
+        margin-top: 25px;
+        margin-bottom: 10px;
+        color: #eee;
+        text-align: center;
+    }
+    h4 {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        color: #ddd;
+        text-align: center;
+    }
+    .saved-list {
+      background-color: #1e1e1e;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px #333;
+      margin-top: 30px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .saved-item {
+      background-color: #2a2a2a;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+    .saved-item-info {
+        flex-grow: 1;
+    }
+    .saved-item-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    .saved-item-actions button {
+        padding: 5px 10px;
+        font-size: 0.8em;
+        margin: 0;
+        min-width: 60px;
+    }
+    .saved-item-actions button.view-btn {
+        background-color: #007bff;
+    }
+    .saved-item-actions button.view-btn:hover {
+        background-color: #0056b3;
+    }
+    .saved-item-actions button.delete-btn {
+        background-color: #dc3545;
+    }
+    .saved-item-actions button.delete-btn:hover {
+        background-color: #c82333;
+    }
+    .saved-item-actions button.edit-btn {
+        background-color: #ffc107;
+        color: #333;
+    }
+    .saved-item-actions button.edit-btn:hover {
+        background-color: #e0a800;
+    }
+    .saved-item-actions button.export-btn {
+        background-color: #17a2b8;
+    }
+    .saved-item-actions button.export-btn:hover {
+        background-color: #138496;
+    }
+    .search-box {
+      margin-bottom: 20px;
+    }
+    .detail-view {
+        background-color: #2a2a2a;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+        border: 1px solid #444;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .detail-view h4 {
+        border-bottom: 1px solid #444;
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+    }
+    .detail-column-item {
+        background-color: #333;
+        padding: 8px;
+        border-radius: 5px;
+        margin-bottom: 8px;
+        border: 1px dashed #555;
+    }
+    #saveBtn {
+        background-color: #28a745;
+    }
+    #updateBtn {
+        background-color: #ffc107;
+        color: #333;
+        display: none;
+    }
+    #cancelUpdateBtn {
+        background-color: #6c757d;
+        display: none;
+    }
+    #exportSelectedBtn {
+        background-color: #007bff;
+        margin-top: 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .checkbox-container {
+        flex-shrink: 0;
+        margin-left: 10px;
+    }
+
+    /* Media Queries */
+    @media (max-width: 480px) {
+        body {
+            padding: 5px;
+            font-size: 0.9em;
+        }
+        .section, .saved-list {
+            padding: 10px;
+        }
+        button {
+            padding: 8px 10px;
+            font-size: 0.9em;
+        }
+        .saved-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .saved-item-actions {
+            margin-top: 10px;
+            width: 100%;
+            justify-content: space-between;
+        }
+        .saved-item-actions button {
+            flex-grow: 1;
+            min-width: unset;
+        }
+        .checkbox-container {
+            margin-bottom: 10px;
+        }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>نموذج استلام جور أعمدة</h2>
+
+  <div class="section" id="main-form">
+    <label>اسم المعاملة:</label>
+    <input type="text" id="transaction_name">
+
+    <label>رقم المعاملة:</label>
+    <input type="text" id="transaction_number">
+
+    <label>اسم المقاول / الشركة:</label>
+    <select id="contractor">
+        <option value="">اختر مقاول...</option>
+        <option value="أهل الهمة">أهل الهمة</option>
+        <option value="عزام النمر">عزام النمر</option>
+        <option value="عبدالله عواد">عبدالله عواد</option>
+        <option value="الليوان">الليوان</option>
+        <option value="أحمد جبر">أحمد جبر</option>
+        <option value="عبدالسلام المعايطة">عبدالسلام المعايطة</option>
+        <option value="الهمشري">الهمشري</option>
+    </select>
+
+    <label>الموقع:</label>
+    <input type="text" id="location">
+
+    <label>تاريخ الاستلام:</label>
+    <input type="date" id="date">
+
+    <label>ملاحظات عامة:</label>
+    <textarea rows="3" id="general_notes"></textarea>
+  </div>
+
+  <h3>تفاصيل الجور / الأعمدة</h3>
+  <div class="section">
+    <div id="columns-container"></div>
+    <button onclick="addColumn()">➕ إضافة تفصيلة عمود</button>
+  </div>
+  <br>
+  <button id="saveBtn" onclick="saveData()">💾 حفظ البيانات</button>
+  <button id="updateBtn" onclick="updateData()">✔️ تحديث البيانات</button>
+  <button id="cancelUpdateBtn" onclick="cancelUpdate()">✖️ إلغاء التعديل</button>
+
+  <div class="saved-list">
+    <h3>📋 المعاملات المحفوظة</h3>
+    <div class="search-box">
+      <label>🔍 بحث:</label>
+      <input type="text" id="searchInput" placeholder="اسم أو رقم المعاملة..." oninput="renderSavedData()">
+    </div>
+    <div id="savedData"></div>
+    <button id="exportSelectedBtn" onclick="exportSelectedData()" style="display:none;">📥 تصدير المحدد</button>
+  </div>
+
+  <script>
+    let columnCount = 0;
+    let currentEditKey = null;
+
+    function addColumn(colData = null) {
+      columnCount++;
+      const container = document.getElementById('columns-container');
+      const div = document.createElement('div');
+      div.className = 'column-box';
+      div.id = `column_box_${columnCount}`;
+      div.innerHTML = `
+        <button class="remove-btn" onclick="removeColumn(${columnCount})">✖️ إزالة</button>
+        <h4>تفصيلة رقم ${columnCount}</h4>
+        <h5 class="sub-section-header">بيانات العمود</h5>
+        <label>نوع العمود:</label>
+        <select id="pole_type_${columnCount}">
+          <option value="3.5">3.5</option>
+          <option value="4.5">4.5</option>
+          <option value="5.5">5.5</option>
+          <option value="ماسورة">ماسورة</option>
+          <option value="مضلع">مضلع</option>
+          <option value="ض.ع">ض.ع</option>
+          <option value="فيادر">فيادر</option>
+          <option value="لا يوجد">لا يوجد</option>
+        </select>
+        <div id="pole_details_${columnCount}">
+          <label>نوع الحفر (العمود):</label>
+          <select id="dig_type_${columnCount}">
+            <option>بلاط</option>
+            <option>باطون</option>
+            <option>أسفلت</option>
+            <option>تراب</option>
+          </select>
+          <label>عدد الأعمدة (للتفصيلة الواحدة):</label>
+          <input type="number" step="1" min="1" value="1" id="quantity_of_poles_${columnCount}">
+          <label>طول العمود (سم):</label>
+          <input type="number" step="1" id="length_${columnCount}">
+          <label>عرض العمود (سم):</label>
+          <input type="number" step="1" id="width_${columnCount}">
+          <label>عمق العمود (سم):</label>
+          <input type="number" step="1" id="depth_${columnCount}">
+        </div>
+        <h5 class="sub-section-header">بيانات الستي/المربط</h5>
+        <label>نوع الستي / المربط:</label>
+        <select id="tie_type_${columnCount}">
+          <option value="ستي">ستي</option>
+          <option value="ستي ض.ع">ستي ض.ع</option>
+          <option value="ستي لغم">ستي لغم</option>
+          <option value="لا يوجد">لا يوجد</option>
+        </select>
+        <div id="tie_details_${columnCount}">
+            <label>نوع حفر الستي:</label>
+            <select id="tie_dig_type_${columnCount}">
+                <option>تراب</option>
+                <option>باطون</option>
+                <option>أسفلت</option>
+                <option>بلاط</option>
+            </select>
+            <label>طول الستي (سم):</label>
+            <input type="number" step="1" id="tie_length_${columnCount}">
+            <label>عرض الستي (سم):</label>
+            <input type="number" step="1" id="tie_width_${columnCount}">
+            <label>عمق الستي (سم):</label>
+            <input type="number" step="1" id="tie_depth_${columnCount}">
+            <label>عدد الستيات (للتفصيلة الواحدة):</label>
+            <input type="number" step="1" min="0" value="1" id="quantity_of_ties_${columnCount}">
+        </div>
+        <label>ملاحظات للتفصيلة:</label>
+        <textarea rows="2" id="column_note_${columnCount}"></textarea>
+      `;
+      container.appendChild(div);
+
+      // Populate with data if available (for editing)
+      if (colData) {
+        document.getElementById(`pole_type_${columnCount}`).value = colData.pole_type || 'لا يوجد';
+        document.getElementById(`column_note_${columnCount}`).value = colData.note || '';
+
+        const poleDetailsDiv = document.getElementById(`pole_details_${columnCount}`);
+        if (colData.pole_type === 'لا يوجد') {
+            poleDetailsDiv.style.display = 'none';
+        } else {
+            poleDetailsDiv.style.display = 'block';
+            document.getElementById(`dig_type_${columnCount}`).value = colData.dig_type || '';
+            document.getElementById(`quantity_of_poles_${columnCount}`).value = colData.quantity_of_poles || '1';
+            document.getElementById(`length_${columnCount}`).value = colData.length || '';
+            document.getElementById(`width_${columnCount}`).value = colData.width || '';
+            document.getElementById(`depth_${columnCount}`).value = colData.depth || '';
+        }
+
+        const tieDetailsDiv = document.getElementById(`tie_details_${columnCount}`);
+        document.getElementById(`tie_type_${columnCount}`).value = colData.tie_type || 'لا يوجد';
+        if (colData.tie_type === 'لا يوجد') {
+            tieDetailsDiv.style.display = 'none';
+        } else {
+            tieDetailsDiv.style.display = 'block';
+            document.getElementById(`tie_dig_type_${columnCount}`).value = colData.tie_dig_type || '';
+            document.getElementById(`tie_length_${columnCount}`).value = colData.tie_length || '';
+            document.getElementById(`tie_width_${columnCount}`).value = colData.tie_width || '';
+            document.getElementById(`tie_depth_${columnCount}`).value = colData.tie_depth || '';
+            document.getElementById(`quantity_of_ties_${columnCount}`).value = colData.quantity_of_ties || '1';
+        }
+      }
+
+      // Add event listener for pole type change
+      document.getElementById(`pole_type_${columnCount}`).addEventListener('change', function() {
+          const poleType = this.value;
+          const poleDetailsDiv = document.getElementById(`pole_details_${columnCount}`);
+          if (poleType === 'لا يوجد') {
+              poleDetailsDiv.style.display = 'none';
+              document.getElementById(`quantity_of_poles_${columnCount}`).value = '0';
+          } else {
+              poleDetailsDiv.style.display = 'block';
+              if (document.getElementById(`quantity_of_poles_${columnCount}`).value === '0') {
+                 document.getElementById(`quantity_of_poles_${columnCount}`).value = '1';
+              }
+          }
+      });
+      // Add event listener for tie type change
+      document.getElementById(`tie_type_${columnCount}`).addEventListener('change', function() {
+          const tieType = this.value;
+          const tieDetailsDiv = document.getElementById(`tie_details_${columnCount}`);
+          if (tieType === 'لا يوجد') {
+              tieDetailsDiv.style.display = 'none';
+              document.getElementById(`quantity_of_ties_${columnCount}`).value = '0';
+          } else {
+              tieDetailsDiv.style.display = 'block';
+              if (document.getElementById(`quantity_of_ties_${columnCount}`).value === '0') {
+                 document.getElementById(`quantity_of_ties_${columnCount}`).value = '1';
+              }
+          }
+      });
+    }
+
+    function removeColumn(id) {
+        const element = document.getElementById(`column_box_${id}`);
+        if (element) {
+            element.remove();
+        }
+    }
+
+    function saveData() {
+      const data = collectFormData();
+      const key = "maamala_" + new Date().toISOString();
+      localStorage.setItem(key, JSON.stringify(data));
+      alert("✅ تم حفظ البيانات بنجاح!");
+      clearForm();
+      renderSavedData();
+    }
+
+    function collectFormData() {
+      const data = {
+        transaction_name: document.getElementById("transaction_name").value,
+        transaction_number: document.getElementById("transaction_number").value,
+        contractor: document.getElementById("contractor").value,
+        location: document.getElementById("location").value,
+        date: document.getElementById("date").value,
+        general_notes: document.getElementById("general_notes").value,
+        columns: []
+      };
+
+      const columnBoxes = document.querySelectorAll('.column-box');
+      columnBoxes.forEach(box => {
+          const id = box.id.split('_')[2];
+          const poleType = document.getElementById(`pole_type_${id}`).value;
+          const tieType = document.getElementById(`tie_type_${id}`).value;
+          const col = {
+            id: id,
+            pole_type: poleType,
+            dig_type: (poleType !== 'لا يوجد') ? document.getElementById(`dig_type_${id}`).value : '',
+            quantity_of_poles: (poleType !== 'لا يوجد') ? document.getElementById(`quantity_of_poles_${id}`).value : '0',
+            length: (poleType !== 'لا يوجد') ? document.getElementById(`length_${id}`).value : '',
+            width: (poleType !== 'لا يوجد') ? document.getElementById(`width_${id}`).value : '',
+            depth: (poleType !== 'لا يوجد') ? document.getElementById(`depth_${id}`).value : '',
+            tie_type: tieType,
+            tie_dig_type: (tieType !== 'لا يوجد') ? document.getElementById(`tie_dig_type_${id}`).value : '',
+            tie_length: (tieType !== 'لا يوجد') ? document.getElementById(`tie_length_${id}`).value : '',
+            tie_width: (tieType !== 'لا يوجد') ? document.getElementById(`tie_width_${id}`).value : '',
+            tie_depth: (tieType !== 'لا يوجد') ? document.getElementById(`tie_depth_${id}`).value : '',
+            quantity_of_ties: (tieType !== 'لا يوجد') ? document.getElementById(`quantity_of_ties_${id}`).value : '0',
+            note: document.getElementById(`column_note_${id}`).value
+          };
+          data.columns.push(col);
+      });
+      return data;
+    }
+
+    function renderSavedData() {
+      const savedDiv = document.getElementById("savedData");
+      savedDiv.innerHTML = "";
+      const search = document.getElementById("searchInput").value.toLowerCase();
+      let savedKeys = Object.keys(localStorage).filter(key => key.startsWith("maamala_"));
+      savedKeys.sort((a, b) => b.localeCompare(a));
+      
+      let hasData = false;
+
+      savedKeys.forEach(key => {
+          const data = JSON.parse(localStorage.getItem(key));
+          if (
+            (data.transaction_name && data.transaction_name.toLowerCase().includes(search)) ||
+            (data.transaction_number && data.transaction_number.toLowerCase().includes(search))
+          ) {
+            hasData = true;
+            let totalPoles = 0;
+            let totalTies = 0;
+            data.columns.forEach(col => {
+                totalPoles += parseInt(col.quantity_of_poles || 0);
+                if (col.tie_type && col.tie_type !== 'لا يوجد' && col.quantity_of_ties) {
+                    totalTies += parseInt(col.quantity_of_ties);
+                }
+            });
+
+            const item = document.createElement("div");
+            item.className = "saved-item";
+            item.innerHTML = `
+              <div class="checkbox-container">
+                  <input type="checkbox" data-key="${key}" class="export-checkbox">
+              </div>
+              <div class="saved-item-info">
+                  <strong>اسم المعاملة:</strong> ${data.transaction_name || 'N/A'}<br>
+                  <strong>رقم المعاملة:</strong> ${data.transaction_number || 'N/A'}<br>
+                  <strong>الموقع:</strong> ${data.location || 'N/A'}<br>
+                  <strong>إجمالي عدد الأعمدة:</strong> ${totalPoles}<br>
+                  <strong>إجمالي عدد الستيات:</strong> ${totalTies}
+              </div>
+              <div class="saved-item-actions">
+                  <button class="delete-btn" onclick="deleteData('${key}')">🗑️ حذف</button>
+                  <button class="edit-btn" onclick="editData('${key}')">✏️ تعديل</button>
+                  <button class="view-btn" onclick="viewData('${key}')">عرض</button>
+                  <button class="export-btn" onclick="exportData('${key}')">📥 تصدير</button>
+              </div>
+              <div id="detail_view_${key.replace(/\./g, '_')}" class="detail-view" style="display:none;"></div>
+            `;
+            savedDiv.appendChild(item);
+          }
+      });
+      
+      const exportSelectedBtn = document.getElementById('exportSelectedBtn');
+      if (hasData) {
+          exportSelectedBtn.style.display = 'block';
+      } else {
+          exportSelectedBtn.style.display = 'none';
+      }
+    }
+
+    function deleteData(key) {
+        if (confirm("هل أنت متأكد أنك تريد حذف هذه المعاملة؟")) {
+            localStorage.removeItem(key);
+            alert("🗑️ تم حذف المعاملة بنجاح!");
+            renderSavedData();
+        }
+    }
+
+    function viewData(key) {
+        const detailViewId = `detail_view_${key.replace(/\./g, '_')}`;
+        const detailDiv = document.getElementById(detailViewId);
+        if (detailDiv.style.display === 'block') {
+            detailDiv.style.display = 'none';
+            return;
+        }
+        detailDiv.innerHTML = '';
+        const data = JSON.parse(localStorage.getItem(key));
+        let htmlContent = `
+            <h4>معلومات عامة:</h4>
+            <p><strong>اسم المعاملة:</strong> ${data.transaction_name || 'N/A'}</p>
+            <p><strong>رقم المعاملة:</strong> ${data.transaction_number || 'N/A'}</p>
+            <p><strong>المقاول:</strong> ${data.contractor || 'N/A'}</p>
+            <p><strong>الموقع:</strong> ${data.location || 'N/A'}</p>
+            <p><strong>تاريخ الاستلام:</strong> ${data.date || 'N/A'}</p>
+            <p><strong>ملاحظات عامة:</strong> ${data.general_notes || 'لا يوجد'}</p>
+            <hr>
+            <h4>تفاصيل الجور / الأعمدة:</h4>
+        `;
+        if (data.columns && data.columns.length > 0) {
+            data.columns.forEach((col, index) => {
+                htmlContent += `
+                    <div class="detail-column-item">
+                        <h5>التفصيلة رقم ${index + 1}</h5>
+                        <p class="sub-section-header">بيانات العمود:</p>
+                        <ul>
+                            <li><strong>نوع العمود:</strong> ${col.pole_type || 'N/A'}</li>
+                `;
+                if (col.pole_type && col.pole_type !== 'لا يوجد') {
+                    htmlContent += `
+                            <li><strong>نوع الحفر:</strong> ${col.dig_type || 'N/A'}</li>
+                            <li><strong>عدد الأعمدة:</strong> ${col.quantity_of_poles || 1}</li>
+                            <li><strong>الطول:</strong> ${col.length || 'N/A'} سم</li>
+                            <li><strong>العرض:</strong> ${col.width || 'N/A'} سم</li>
+                            <li><strong>العمق:</strong> ${col.depth || 'N/A'} سم</li>
+                    `;
+                }
+                htmlContent += `
+                        </ul>
+                `;
+                if (col.tie_type && col.tie_type !== 'لا يوجد') {
+                     htmlContent += `
+                            <p class="sub-section-header">بيانات الستي/المربط:</p>
+                            <ul>
+                                <li><strong>نوع الستي/المربط:</strong> ${col.tie_type}</li>
+                                <li><strong>نوع حفر الستي:</strong> ${col.tie_dig_type || 'N/A'}</li>
+                                <li><strong>طول الستي:</strong> ${col.tie_length || 'N/A'} سم</li>
+                                <li><strong>عرض الستي:</strong> ${col.tie_width || 'N/A'} سم</li>
+                                <li><strong>عمق الستي:</strong> ${col.tie_depth || 'N/A'} سم</li>
+                                <li><strong>عدد الستيات:</strong> ${col.quantity_of_ties || 1}</li>
+                            </ul>
+                    `;
+                } else {
+                     htmlContent += `<p><strong>نوع الستي/المربط:</strong> لا يوجد</p>`;
+                }
+                htmlContent += `
+                            <p><strong>ملاحظات:</strong> ${col.note || 'لا يوجد'}</p>
+                        </div>
+                `;
+            });
+        } else {
+            htmlContent += '<p>لا توجد تفاصيل أعمدة مسجلة لهذه المعاملة.</p>';
+        }
+        detailDiv.innerHTML = htmlContent;
+        detailDiv.style.display = 'block';
+    }
+
+    function editData(key) {
+        const data = JSON.parse(localStorage.getItem(key));
+        if (!data) {
+            alert('لا يمكن العثور على البيانات للتعديل.');
+            return;
+        }
+
+        clearForm();
+        currentEditKey = key;
+
+        document.getElementById("transaction_name").value = data.transaction_name || '';
+        document.getElementById("transaction_number").value = data.transaction_number || '';
+        document.getElementById("contractor").value = data.contractor || '';
+        document.getElementById("location").value = data.location || '';
+        document.getElementById("date").value = data.date || '';
+        document.getElementById("general_notes").value = data.general_notes || '';
+
+        if (data.columns && data.columns.length > 0) {
+            data.columns.forEach(col => addColumn(col));
+        }
+
+        document.getElementById("saveBtn").style.display = 'none';
+        document.getElementById("updateBtn").style.display = 'inline-block';
+        document.getElementById("cancelUpdateBtn").style.display = 'inline-block';
+
+        document.getElementById("main-form").scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function updateData() {
+        if (!currentEditKey) {
+            alert("لا توجد معاملة محددة للتحديث.");
+            return;
+        }
+
+        const data = collectFormData();
+        localStorage.setItem(currentEditKey, JSON.stringify(data));
+        alert("✔️ تم تحديث البيانات بنجاح!");
+        clearForm();
+        renderSavedData();
+        currentEditKey = null;
+
+        document.getElementById("saveBtn").style.display = 'inline-block';
+        document.getElementById("updateBtn").style.display = 'none';
+        document.getElementById("cancelUpdateBtn").style.display = 'none';
+    }
+
+    function cancelUpdate() {
+        clearForm();
+        currentEditKey = null;
+        document.getElementById("saveBtn").style.display = 'inline-block';
+        document.getElementById("updateBtn").style.display = 'none';
+        document.getElementById("cancelUpdateBtn").style.display = 'none';
+    }
+
+    function clearForm() {
+        document.getElementById("transaction_name").value = '';
+        document.getElementById("transaction_number").value = '';
+        document.getElementById("contractor").value = '';
+        document.getElementById("location").value = '';
+        document.getElementById("date").value = '';
+        document.getElementById("general_notes").value = '';
+        document.getElementById("columns-container").innerHTML = '';
+        columnCount = 0;
+    }
+
+    function formatDataAsText(data) {
+        let text = `
+========================================
+معلومات المعاملة
+========================================
+اسم المعاملة: ${data.transaction_name || 'N/A'}
+رقم المعاملة: ${data.transaction_number || 'N/A'}
+اسم المقاول / الشركة: ${data.contractor || 'N/A'}
+الموقع: ${data.location || 'N/A'}
+تاريخ الاستلام: ${data.date || 'N/A'}
+ملاحظات عامة: ${data.general_notes || 'لا يوجد'}
+\n\n`;
+
+        if (data.columns && data.columns.length > 0) {
+            text += `========================================
+تفاصيل الجور / الأعمدة
+========================================
+`;
+            data.columns.forEach((col, index) => {
+                text += `
+----------------------------------------
+التفصيلة رقم ${index + 1}
+----------------------------------------
+* بيانات العمود:
+  - نوع العمود: ${col.pole_type || 'N/A'}
+`;
+                if (col.pole_type && col.pole_type !== 'لا يوجد') {
+                    text += `
+  - نوع الحفر: ${col.dig_type || 'N/A'}
+  - عدد الأعمدة: ${col.quantity_of_poles || 1}
+  - الطول: ${col.length || 'N/A'} سم
+  - العرض: ${col.width || 'N/A'} سم
+  - العمق: ${col.depth || 'N/A'} سم
+`;
+                }
+                
+                if (col.tie_type && col.tie_type !== 'لا يوجد') {
+                    text += `
+* بيانات الستي/المربط:
+  - نوع الستي/المربط: ${col.tie_type}
+  - نوع حفر الستي: ${col.tie_dig_type || 'N/A'}
+  - طول الستي: ${col.tie_length || 'N/A'} سم
+  - عرض الستي: ${col.tie_width || 'N/A'} سم
+  - عمق الستي: ${col.tie_depth || 'N/A'} سم
+  - عدد الستيات: ${col.quantity_of_ties || 1}
+`;
+                } else {
+                    text += `
+* نوع الستي/المربط: لا يوجد
+`;
+                }
+                text += `
+* ملاحظات للتفصيلة: ${col.note || 'لا يوجد'}
+\n`;
+            });
+        } else {
+            text += 'لا توجد تفاصيل أعمدة مسجلة لهذه المعاملة.\n';
+        }
+        text += '----------------------------------------\n\n';
+        return text;
+    }
+
+    function downloadFile(filename, text) {
+        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    
+    function exportData(key) {
+        const data = JSON.parse(localStorage.getItem(key));
+        if (!data) {
+            alert('لا يمكن العثور على البيانات للتصدير.');
+            return;
+        }
+        const exportText = formatDataAsText(data);
+        const filename = `تقرير_معاملة_${data.transaction_number || data.transaction_name || new Date().toISOString()}.txt`;
+        downloadFile(filename, exportText);
+    }
+
+    function exportSelectedData() {
+        const checkboxes = document.querySelectorAll('.export-checkbox:checked');
+        if (checkboxes.length === 0) {
+            alert("يرجى تحديد معاملة واحدة على الأقل للتصدير.");
+            return;
+        }
+
+        let combinedText = '';
+        checkboxes.forEach(checkbox => {
+            const key = checkbox.dataset.key;
+            const data = JSON.parse(localStorage.getItem(key));
+            if (data) {
+                combinedText += formatDataAsText(data);
+            }
+        });
+        
+        const filename = `تقرير_مجمع_للأعمدة_${new Date().toISOString()}.txt`;
+        downloadFile(filename, combinedText);
+    }
+
+    window.onload = renderSavedData;
+  </script>
+
+</body>
+</html>
