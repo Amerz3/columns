@@ -49,6 +49,7 @@
       margin-left: 5px;
       width: auto;
       display: inline-block;
+      transition: background-color 0.3s ease;
     }
     button.remove-btn {
       background-color: #dc3545;
@@ -201,6 +202,30 @@
         margin-left: 10px;
     }
 
+    /* Floating message styles */
+    .message-box {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        border-radius: 8px;
+        color: white;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        transform: translateY(20px);
+    }
+    .message-box.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .message-box.success {
+        background-color: #28a745;
+    }
+    .message-box.error {
+        background-color: #dc3545;
+    }
+
     /* Media Queries */
     @media (max-width: 480px) {
         body {
@@ -229,6 +254,12 @@
         }
         .checkbox-container {
             margin-bottom: 10px;
+        }
+        .message-box {
+          bottom: 10px;
+          right: 10px;
+          left: 10px;
+          text-align: center;
         }
     }
   </style>
@@ -285,10 +316,47 @@
     <div id="savedData"></div>
     <button id="exportSelectedBtn" onclick="exportSelectedData()" style="display:none;">📥 تصدير المحدد</button>
   </div>
+  
+  <div id="message-container"></div>
 
   <script>
     let columnCount = 0;
     let currentEditKey = null;
+
+    const poleDimensions = {
+      '3.5': { length: 100, width: 80, depth: 150 },
+      '4.5': { length: 100, width: 80, depth: 150 },
+      'ماسورة': { length: 100, width: 80, depth: 150 },
+      '5.5': { length: 120, width: 100, depth: 175 },
+      'مضلع': { length: 120, width: 100, depth: 175 },
+      'فيادر': { length: 120, width: 100, depth: 175 },
+      'ض.ع': { length: 120, width: 100, depth: 175 },
+      'لا يوجد': { length: '', width: '', depth: '' }
+    };
+    
+    const tieDimensions = {
+      'ستي': { length: 100, width: 70, depth: 150 },
+      'ستي لغم': { length: 0, width: 0, depth: 100 },
+      'ستي ض.ع': { length: 120, width: 70, depth: 150 },
+      'لا يوجد': { length: '', width: '', depth: '' }
+    };
+
+    function showMessage(message, type) {
+        const container = document.getElementById('message-container');
+        const msgBox = document.createElement('div');
+        msgBox.className = `message-box ${type}`;
+        msgBox.textContent = message;
+        container.appendChild(msgBox);
+
+        setTimeout(() => {
+            msgBox.classList.add('show');
+        }, 10);
+
+        setTimeout(() => {
+            msgBox.classList.remove('show');
+            setTimeout(() => msgBox.remove(), 500);
+        }, 3000);
+    }
 
     function addColumn(colData = null) {
       columnCount++;
@@ -389,7 +457,7 @@
         }
       }
 
-      // Add event listener for pole type change
+      // Event listener for pole type change
       document.getElementById(`pole_type_${columnCount}`).addEventListener('change', function() {
           const poleType = this.value;
           const poleDetailsDiv = document.getElementById(`pole_details_${columnCount}`);
@@ -401,9 +469,15 @@
               if (document.getElementById(`quantity_of_poles_${columnCount}`).value === '0') {
                  document.getElementById(`quantity_of_poles_${columnCount}`).value = '1';
               }
+              const dimensions = poleDimensions[poleType];
+              if (dimensions) {
+                  document.getElementById(`length_${columnCount}`).value = dimensions.length;
+                  document.getElementById(`width_${columnCount}`).value = dimensions.width;
+                  document.getElementById(`depth_${columnCount}`).value = dimensions.depth;
+              }
           }
       });
-      // Add event listener for tie type change
+      // Event listener for tie type change
       document.getElementById(`tie_type_${columnCount}`).addEventListener('change', function() {
           const tieType = this.value;
           const tieDetailsDiv = document.getElementById(`tie_details_${columnCount}`);
@@ -415,8 +489,30 @@
               if (document.getElementById(`quantity_of_ties_${columnCount}`).value === '0') {
                  document.getElementById(`quantity_of_ties_${columnCount}`).value = '1';
               }
+              const dimensions = tieDimensions[tieType];
+              if (dimensions) {
+                  document.getElementById(`tie_length_${columnCount}`).value = dimensions.length;
+                  document.getElementById(`tie_width_${columnCount}`).value = dimensions.width;
+                  document.getElementById(`tie_depth_${columnCount}`).value = dimensions.depth;
+              }
           }
       });
+      
+      // Initial population for new columns
+      if (!colData) {
+        const initialPoleType = document.getElementById(`pole_type_${columnCount}`).value;
+        const initialTieType = document.getElementById(`tie_type_${columnCount}`).value;
+        if (poleDimensions[initialPoleType]) {
+            document.getElementById(`length_${columnCount}`).value = poleDimensions[initialPoleType].length;
+            document.getElementById(`width_${columnCount}`).value = poleDimensions[initialPoleType].width;
+            document.getElementById(`depth_${columnCount}`).value = poleDimensions[initialPoleType].depth;
+        }
+        if (tieDimensions[initialTieType]) {
+            document.getElementById(`tie_length_${columnCount}`).value = tieDimensions[initialTieType].length;
+            document.getElementById(`tie_width_${columnCount}`).value = tieDimensions[initialTieType].width;
+            document.getElementById(`tie_depth_${columnCount}`).value = tieDimensions[initialTieType].depth;
+        }
+      }
     }
 
     function removeColumn(id) {
@@ -427,10 +523,16 @@
     }
 
     function saveData() {
+      const transactionName = document.getElementById("transaction_name").value.trim();
+      if (transactionName === "") {
+          showMessage("🚫 الرجاء إدخال اسم المعاملة.", "error");
+          return;
+      }
+      
       const data = collectFormData();
       const key = "maamala_" + new Date().toISOString();
       localStorage.setItem(key, JSON.stringify(data));
-      alert("✅ تم حفظ البيانات بنجاح!");
+      showMessage("✅ تم حفظ البيانات بنجاح!", "success");
       clearForm();
       renderSavedData();
     }
@@ -533,7 +635,7 @@
     function deleteData(key) {
         if (confirm("هل أنت متأكد أنك تريد حذف هذه المعاملة؟")) {
             localStorage.removeItem(key);
-            alert("🗑️ تم حذف المعاملة بنجاح!");
+            showMessage("🗑️ تم حذف المعاملة بنجاح!", "success");
             renderSavedData();
         }
     }
@@ -576,6 +678,7 @@
                             <li><strong>العمق:</strong> ${col.depth || 'N/A'} سم</li>
                     `;
                 }
+                
                 htmlContent += `
                         </ul>
                 `;
@@ -609,7 +712,7 @@
     function editData(key) {
         const data = JSON.parse(localStorage.getItem(key));
         if (!data) {
-            alert('لا يمكن العثور على البيانات للتعديل.');
+            showMessage('لا يمكن العثور على البيانات للتعديل.', 'error');
             return;
         }
 
@@ -636,13 +739,19 @@
 
     function updateData() {
         if (!currentEditKey) {
-            alert("لا توجد معاملة محددة للتحديث.");
+            showMessage("لا توجد معاملة محددة للتحديث.", "error");
+            return;
+        }
+
+        const transactionName = document.getElementById("transaction_name").value.trim();
+        if (transactionName === "") {
+            showMessage("🚫 الرجاء إدخال اسم المعاملة.", "error");
             return;
         }
 
         const data = collectFormData();
         localStorage.setItem(currentEditKey, JSON.stringify(data));
-        alert("✔️ تم تحديث البيانات بنجاح!");
+        showMessage("✔️ تم تحديث البيانات بنجاح!", "success");
         clearForm();
         renderSavedData();
         currentEditKey = null;
@@ -746,18 +855,19 @@
     function exportData(key) {
         const data = JSON.parse(localStorage.getItem(key));
         if (!data) {
-            alert('لا يمكن العثور على البيانات للتصدير.');
+            showMessage('لا يمكن العثور على البيانات للتصدير.', 'error');
             return;
         }
         const exportText = formatDataAsText(data);
         const filename = `تقرير_معاملة_${data.transaction_number || data.transaction_name || new Date().toISOString()}.txt`;
         downloadFile(filename, exportText);
+        showMessage("📥 تم تصدير التقرير بنجاح!", "success");
     }
 
     function exportSelectedData() {
         const checkboxes = document.querySelectorAll('.export-checkbox:checked');
         if (checkboxes.length === 0) {
-            alert("يرجى تحديد معاملة واحدة على الأقل للتصدير.");
+            showMessage("🚫 يرجى تحديد معاملة واحدة على الأقل للتصدير.", "error");
             return;
         }
 
@@ -772,6 +882,7 @@
         
         const filename = `تقرير_مجمع_للأعمدة_${new Date().toISOString()}.txt`;
         downloadFile(filename, combinedText);
+        showMessage("📥 تم تصدير التقارير المحددة بنجاح!", "success");
     }
 
     window.onload = renderSavedData;
